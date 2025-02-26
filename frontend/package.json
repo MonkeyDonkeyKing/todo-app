@@ -2,12 +2,6 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "jest": {
-    "transformIgnorePatterns": [  "/node_modules/(?!(axios)/)" ],
-    "transform": {
-      "^.+\\.[jt]sx?$": "babel-jest"
-    }
-  },
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -22,7 +16,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest --config=./jest.config.js --testPathPattern=src/components/",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

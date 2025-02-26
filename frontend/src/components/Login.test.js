@@ -1,33 +1,32 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Login from "./Login.js";
 import useAuthStore from "../store/auth";
+import '@testing-library/jest-dom';
 
-jest.mock("../store/auth", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
+beforeEach(() => {
+  useAuthStore.setState({
     login: jest.fn(),
     register: jest.fn(),
-  })),
-}));
+  });
+});
 
-describe("Login Component", () => {
-  test("rendert Eingabefelder und Login-Button", () => {
-    useAuthStore.mockReturnValue({
-      login: jest.fn(),
-    });
-
+describe("Testet Login Funktionen", () => {
+  it("rendert Eingabefelder und Login-Button", () => {
     render(<Login />);
     
-    expect(screen.getByPlaceholderText("Benutzername")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Passwort")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument();
+    const usernameInput = screen.getByTestId("username");
+    const passwordInput = screen.getByTestId("password");
+    const submitButton = screen.getByTestId("submit");
+
+    expect(usernameInput).toBeInTheDocument();
+    expect(passwordInput).toBeInTheDocument();
+    expect(submitButton).toBeInTheDocument();
   });
 
-  test("ruft login-Funktion mit korrekten Werten beim Absenden auf", async () => {
+  it("ruft login-Funktion mit korrekten Werten beim Absenden auf", async () => {
     const loginMock = jest.fn();
-    useAuthStore.mockReturnValue({
-      login: loginMock,
-    });
+    useAuthStore.setState({ login: loginMock });
 
     render(<Login />);
 
