@@ -1,21 +1,17 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import Register from "./Register";
+import React from "react"
 import useAuthStore from "../store/auth";
-
-jest.mock("../store/auth", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    login: jest.fn(),
-    register: jest.fn(),
-  })),
-}));
+import '@testing-library/jest-dom';
 
 describe("Register Component", () => {
-  test("rendert Eingabefelder und Registrieren-Button", () => {
-    useAuthStore.mockReturnValue({
+  beforeEach(() => {
+    useAuthStore.setState({
+      login: jest.fn(),
       register: jest.fn(),
     });
-
+  });
+  test("rendert Eingabefelder und Registrieren-Button", () => {
     render(<Register />);
     
     expect(screen.getByPlaceholderText("Benutzername")).toBeInTheDocument();
@@ -25,10 +21,7 @@ describe("Register Component", () => {
 
   test("ruft register-Funktion mit korrekten Werten beim Absenden auf", async () => {
     const registerMock = jest.fn();
-
-    useAuthStore.mockReturnValue({
-      register: registerMock,
-    });
+    useAuthStore.setState({ register: registerMock });
 
     render(<Register />);
 
