@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import pkg from "jsonwebtoken";
 import User from "../models/User.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const { sign } = pkg;
 const router = express.Router();
@@ -27,6 +28,22 @@ router.post("/login", async (req, res) => {
     res.json({ token });
   } catch (err) {
     res.status(500).json(err);
+  }
+});
+
+router.get("/getUsername", authMiddleware, async (req, res) => {
+  try {
+    console.log("HIER REQUEST",req);
+    
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.json({ username: user.username });
+  } catch (err) {
+    res.status(500).json({ message: "Server error." });
   }
 });
 
