@@ -1,33 +1,67 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/auth.js";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import "./Register.css";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState(null);
+  const [severity, setSeverity] = useState("error"); 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
   const register = useAuthStore((state) => state.register);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await register(username, password);
+    try {
+      await register(username, password);
+      setMessage("Registration successful!");
+      setSeverity("success"); 
+      setOpenSnackbar(true);
+
+      setTimeout(() => {navigate("/login"); },2000)
+      
+    } catch (err) {
+      
+      setMessage(err.response.data.errorResponse.errmsg || "An error occurred");
+      setSeverity("error");
+      setOpenSnackbar(true);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Benutzername"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Passwort"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">Registrieren</button>
-    </form>
+    <div className="register-container">
+      <h2>Register</h2>
+      <form onSubmit={handleSubmit} className="register-form">
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Register</button>
+        <button onClick={() => navigate("/login")} className="register-button">Go to Login</button>
+      </form>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={severity} sx={{ width: "100%" }}>
+          {message}
+        </Alert>
+      </Snackbar>
+    </div>
   );
 };
 
